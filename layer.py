@@ -12,7 +12,7 @@ class Layer:
             activation function [sigmoid,tanh]
         """
         self.with_bias = with_bias
-        self.bias = np.zeros(neurons_cnt) + with_bias
+        self.bias = np.zeros(neurons_cnt)
         self.neurons = np.zeros(neurons_cnt)
         self.error = self.neurons
         self.activ_fn_type = activation_fn_type
@@ -28,7 +28,13 @@ class Layer:
         return self.neurons
 
     def init_weights(self,w_dim):
-        w = np.ones([w_dim]*random.uniform(-1e-9, 1e-9))
+        w = np.zeros(w_dim)
+
+        for i in w:
+            i += random.uniform(-1e-9, 1e-9)
+        if self.with_bias:
+            for i in self.bias:
+                i += random.uniform(-1e-9, 1e-9)
         return w
 
     def activation_fn(self,val):
@@ -79,8 +85,11 @@ class Layer:
         return self.error
     
     def update(self,eta,prev_layer):
+        #print np.shape(self.weights)
+        for i in range(0,len(prev_layer.neurons)):
+            #print np.shape(self.weights[i,:]),np.shape(self.error)
+            self.weights[i,:] += eta*self.error
         for i in range(0,len(self.neurons)):
-            self.weights[i,:] += eta*self.error[i]*prev_layer.neurons
             if self.with_bias:
                 self.bias[i] += eta*self.error[i]
 

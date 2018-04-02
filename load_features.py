@@ -19,5 +19,6 @@ def load_features(filename):
 
     for i in range(0,len(labels)):
         label_features[labels[i]].append(features[i])
+
     
     return features_cnt, label_features
