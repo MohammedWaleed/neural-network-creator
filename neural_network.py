@@ -1,5 +1,6 @@
 from layer import Layer
 import numpy as np
+import math
 class NeuralNetwork:
     def __init__(self,features_cnt,layers_cnt,layers_neu_cnt,layers_actv_fn,output_cnt,out_actv_fn,with_bias = True):
         """
@@ -28,7 +29,7 @@ class NeuralNetwork:
         
 
     
-    def train(self,label_features_map,eta,num_epochs,mse_threshold):
+    def train(self,label_features_map,eta,num_epochs,with_mse,mse_threshold):
         loss_curve = []
         for epoch in range(0, num_epochs):
             loss = 0.0 # should be removed
@@ -38,8 +39,9 @@ class NeuralNetwork:
                 error = 0.0
                 e_cnt = 0 
                 for features in label_features_map[class_label]: # iterate over class samples feature
-                    self.netrowk[0].neurons = features
                     
+                    self.netrowk[0].neurons = features
+
                     for i in range(1,len(self.netrowk)):# train the network by evaluation the layers
                         self.netrowk[i].evaluate(self.netrowk[i-1].neurons)
                     
@@ -61,14 +63,16 @@ class NeuralNetwork:
                     e_cnt+=1
                     l_cnt +=1
                 loss += error
-                print("Epoch %d-> learning_rate: %f, trainin_loss: %f\n"%(epoch,eta,error/e_cnt))
+                #print("Epoch %d-> learning_rate: %f, trainin_loss: %f\n"%(epoch,eta,error/e_cnt))
             loss_curve.append(loss/l_cnt)
-            print("Epoch %d-> learning_rate: %f, trainin_loss: %f\n"%(epoch,eta,loss/l_cnt))
-        
+            #print("Epoch %d-> learning_rate: %f, trainin_loss: %f\n"%(epoch,eta,loss/l_cnt))
+            if with_mse and np.isclose(loss/l_cnt,mse_threshold):
+                break
+
         return self.netrowk, loss_curve
 
-    def evaluate(self,input):
-        self.netrowk[0].neurons = input
+    def evaluate(self,x):
+        self.netrowk[0].neurons = x
         for i in range(1,len(self.netrowk)) : # train the network by evaluation the layers
             self.netrowk[i].evaluate(self.netrowk[i-1].neurons)
         
@@ -91,7 +95,7 @@ class NeuralNetwork:
                 if i==j:
                     diagonal+= co_mat[i,j]
                 total+=co_mat[i,j]
-        
+        print co_mat
         return diagonal/total 
 
     def calc_mse(self,desierd,output):

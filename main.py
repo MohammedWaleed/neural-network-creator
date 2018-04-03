@@ -1,26 +1,44 @@
 import load_features
 import draw_result
 from neural_network import NeuralNetwork
+import json
 
 def main():
-    features_cnt,label_features = load_features.load_features("Iris Data.txt")
+
+    data = load_data()
+    features_cnt,label_features = load_features.load_features(data["inputFile"])
 
     training_data = {}
     for label in label_features:
-        training_data.update({label:label_features[label][0:30]})
+        training_data.update({label:label_features[label][:data["traininSamplesCnt"]]})
 
     testing_data = {}
     for label in label_features:
-        testing_data.update({label:label_features[label][30:]})
+        testing_data.update({label:label_features[label][data["traininSamplesCnt"]:]})
     
-    network = NeuralNetwork(features_cnt,4,[4,8,6,5],['tanh','tanh','tanh','tanh'],3,'tanh')
+    network = NeuralNetwork(features_cnt,
+                            data["hiddenLayers"]["cnt"],
+                            data["hiddenLayers"]["layersNeuronsCnt"],
+                            data["hiddenLayers"]["layersActivFns"],
+                            data["outputLayer"]["neorunsCnt"],
+                            data["outputLayer"]["activFn"],
+                            data["withBias"])
 
-    _,loss_curve = network.train(training_data,0.005,500,0.005)
+    _,loss_curve = network.train(training_data,
+                                data["eta"],
+                                data["epochsNo"],
+                                data["stopMSE"],
+                                data["MSE"])
+
     draw_result.draw_training(loss_curve)
 
     x = network.test(testing_data)*100
     print "Accuracy: %f%%"%x
 
+def load_data():
+    with open('hyperparameters.json') as data_file:
+        data = json.load(data_file)
+    return data
 if __name__ == '__main__':
     main()
 

@@ -1,8 +1,6 @@
 import math
 import random 
 import numpy as np
-
-
 class Layer:
     
     def __init__(self,neurons_cnt,weights_dim,activation_fn_type = 'sigmoid',with_bias = True):
@@ -50,7 +48,7 @@ class Layer:
             return self.tanh_deriv(val)
     
     def sigmoid(self,val):
-        return 1 / (1 + math.exp(-val))
+        return 1.0 / (1.0 + math.exp(-val))
     
     def tanh(self,val):
         return np.tanh(val)
@@ -62,7 +60,7 @@ class Layer:
     
     def tanh_deriv(self,val):
         f = self.tanh(val)
-        f = 1 - (f ** 2)
+        f = 1.0 - (f * f)
         return f
     def calc_error_as_output(self,desired):
         """
@@ -71,7 +69,7 @@ class Layer:
         """
         for i in range(0,len(self.neurons)):
             self.error[i] = (desired[i]-self.neurons[i])*self.activation_fn_deriv(self.neurons[i])
-            
+
         return self.error
     
     def calc_error(self,next_layer):
@@ -80,15 +78,14 @@ class Layer:
         """
         for i in range(0,len(self.neurons)):
             e = np.matmul(next_layer.weights[i,:],next_layer.error)
-            self.error[i] = e + self.activation_fn_deriv(self.neurons[i])
-        
+            self.error[i] = e * self.activation_fn_deriv(self.neurons[i])
         return self.error
     
     def update(self,eta,prev_layer):
         #print np.shape(self.weights)
         for i in range(0,len(prev_layer.neurons)):
             #print np.shape(self.weights[i,:]),np.shape(self.error)
-            self.weights[i,:] += eta*self.error
+            self.weights[i,:] += eta*self.error*prev_layer.neurons[i]
         for i in range(0,len(self.neurons)):
             if self.with_bias:
                 self.bias[i] += eta*self.error[i]
