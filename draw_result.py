@@ -8,6 +8,7 @@ def draw_training(loss_curve):
 
     plt.plot(loss_curve)
     plt.show()
+    plt.close()
 
     
     

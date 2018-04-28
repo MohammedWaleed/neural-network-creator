@@ -2,16 +2,16 @@
     "inputFile":"Iris Data.txt",
     "traininSamplesCnt":30,
     "hiddenLayers":{
-        "cnt":4,
-        "layersNeuronsCnt":[4,8,8,3],
-        "layersActivFns":["sigmod","sigmod","sigmod","sigmod"]
+        "cnt":1,
+        "layersNeuronsCnt":[5],
+        "layersActivFns":["sigmoid"]
     },
     "outputLayer":{
         "neorunsCnt":3,
         "activFn":"sigmoid"
     },
-    "epochsNo":100,
-    "eta":0.0005,
+    "epochsNo":500,
+    "eta":5e-3,
     "withBias":true,
     "stopMSE":true,
     "MSE":0.005
