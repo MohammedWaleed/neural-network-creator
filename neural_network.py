@@ -1,5 +1,6 @@
 from layer import Layer
 import numpy as np
+import time
 class NeuralNetwork:
     def __init__(self,features_cnt,layers_cnt,layers_neu_cnt,layers_actv_fn,output_cnt,out_actv_fn,with_bias = True):
         """
@@ -27,6 +28,7 @@ class NeuralNetwork:
     
     def train(self,label_features_map,eta,num_epochs,with_mse,mse_threshold):
         loss_curve = []
+        then = time.time()
         for epoch in range(0, num_epochs):
             # iterate over each class
             for class_num,class_label in zip(range(0,len(label_features_map)),label_features_map):
@@ -68,10 +70,12 @@ class NeuralNetwork:
             for i in error_list:
                 mse+=i
             
-            mse/=2
+            mse/=len(error_list)
             loss_curve.append(mse)
+            now = time.time()
 
-            print("Epoch %d-> time: %f, trainin_loss: %f\n"%(epoch,eta,mse))
+            tm = now - then
+            print("Epoch %d-> time: %f sec, trainin_loss: %f, learning_rate%f\n"%(epoch,tm,mse,eta))
             if with_mse and np.isclose(mse,mse_threshold):
                 break
 
